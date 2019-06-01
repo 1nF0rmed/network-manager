@@ -17,10 +17,9 @@ https://docs.google.com/document/d/1EMevaAhr6fjVR8Kr15BGpexlWN4bp8phr2Dw8dn8uQo/
 2. Move to folder ideas in the cloned repo.
 3. Place client.py on the client node and run
 
-  `python client.py`
+      `python client.py`
   
 4. Place server.py on the server node and run
 
-  `python server.py`
+      `python server.py`
   
-5. Run 
