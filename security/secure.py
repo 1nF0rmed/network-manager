@@ -11,8 +11,11 @@ class AESCipher:
         self.key = hashlib.sha256(key.encode()).digest()    # Generate a hash for the key
 
     # Lambda help functions
-    _pad    =   lambda s: s + (self.block_size - len(s)%self.block_size) * chr(self.block_size - len(s)%self.block_size)
-    _unpad  =   lambda s: s[:-ord(s[len(s)-1:])]
+    def _pad(self, s): 
+        return s + (self.block_size - len(s)%self.block_size) * chr(self.block_size - len(s)%self.block_size)
+    
+    def _unpad(self, s):
+        return s[:-ord(s[len(s)-1:])]
 
     # Misc help functions
     def getKey(self):
