@@ -1,5 +1,6 @@
 import socket
 import time
+import threading
 
 """
 Version: 0.1a
@@ -22,15 +23,47 @@ class Server:
     
     def init_socket(self):
         # Create socket for the server
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.broad_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.broad_server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
         # Set timeout
         self.server.settimeout(0.2)
 
         # Bind the socket
-        self.server.bind((self.IP, self.PORT))
+        self.server.bind((self.IP, self.TRANS_P))
+
+        self.broad_server.bind((self.IP, self.PORT))
+    
+    def generateKey(self):
+        pass
+
+    def setupClient(self):
         
+        self.server.listen(10)
+
+        while 1:
+            try:
+                conn, addr = self.server.accept()
+                
+                with conn:
+                    print("Connected by: {0}".format(addr))
+                    while 1:
+                        data = conn.recv(1024)
+                        if not data:
+                            break
+                        print(data)
+
+            except Exception as e:
+                print("[ERR] setupClient")
+                print(e)
+
+    # Thread that handles response messages
+    
+
+    # Method to handle multiple concurrent requests
+    
+
     def start_transmit(self):
 
         # Initialize the socket
@@ -39,16 +72,32 @@ class Server:
         # Transmit the message
         message = b'I am SERVER'
         
+        # Listening for responses on a different thread
+
+        handle_client = threading.Thread(target=self.setupClient)
+        handle_client.start()
+
+        # Broadcasting thread
+        broad_thread = threading.Thread(target=self.broadcast_thread, args=(message,))
+        broad_thread.start()
+
+    def broadcast_thread(self, message):
         while 1:
-            self.server.sendto(message, ('<broadcast>', self.TRANS_P))
-            print("[LOG] message: {0} has been sent!".format(message))
+            try:
+                self.broad_server.sendto(message, ('<broadcast>', self.TRANS_P))
+                print("[LOG] message: {0} has been sent!".format(message))
+            except Exception as e:
+                print("[LOG] We are breaking mate!\n")
+                print(e)
+
+                break
 
             # Sleep for sometime
             time.sleep(1)
 
 
 def main():
-    server = Server("", 44444, 37020)
+    server = Server("", 1034, 37020)
     server.start_transmit()
 
 if __name__ == "__main__":

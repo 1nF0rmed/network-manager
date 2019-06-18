@@ -36,6 +36,12 @@ class Client:
             # Get the data and the address for the message
             data, addr = self.client.recvfrom(1024)
             print("Received message: {0}".format(data))
+            
+
+            # Send OK to server and setup the initialization
+            self.client.connect(addr)
+            self.client.sendall(b'OK')
+
 
 def main():
     clt = Client("", 37020)
